@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>水机看板 · 中东非</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+/* ============================================================
+   TCL 水机智能化看板
+   Style: 商务深色数据看板（Business Dark）
+   ============================================================ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+  background:radial-gradient(ellipse at top left,#1e293b 0%,#0a0e1a 50%,#050810 100%);
+  color:#f3f4f6;font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:rgba(75,85,99,0.4);border-radius:3px}
+::-webkit-scrollbar-track{background:transparent}
+
+:root{
+  --bg-1:rgba(17,24,39,0.6);
+  --bg-2:rgba(31,41,55,0.5);
+  --bg-3:rgba(55,65,81,0.4);
+  --border:rgba(75,85,99,0.4);
+  --border-strong:rgba(107,114,128,0.6);
+  --txt-1:#f3f4f6;
+  --txt-2:#9ca3af;
+  --txt-3:#6b7280;
+
+  --blue:#3b82f6;
+  --cyan:#06b6d4;
+  --purple:#8b5cf6;
+  --green:#10b981;
+  --orange:#f59e0b;
+  --pink:#ec4899;
+  --red:#ef4444;
+
+  --tcl-red:#e60012;
+  --accent:var(--blue);
+}
+
+.app{
+  display:grid;
+  grid-template-rows:64px 1fr;
+  grid-template-columns:280px 1fr;
+  grid-template-areas:"topbar topbar" "sidebar main";
+  height:100vh;
+}
+
+/* Topbar */
+.topbar{
+  grid-area:topbar;
+  display:flex;align-items:center;gap:24px;
+  padding:0 24px;
+  background:rgba(10,14,26,0.7);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  z-index:10;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{
+  width:38px;height:38px;border-radius:9px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#ff2a3a 0%,#e60012 55%,#b3000d 100%);
+  box-shadow:0 0 18px rgba(230,0,18,0.45);
+  flex-shrink:0;
+}
+.brand-logo svg{display:block}
+.brand-text{line-height:1.15}
+.brand-title{font-size:16px;font-weight:600;letter-spacing:0.5px}
+.brand-sub{font-size:10px;color:var(--txt-3);letter-spacing:1.6px}
+
+.topbar-spacer{flex:1}
+.topbar-tools{display:flex;align-items:center;gap:12px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;
+  background:var(--bg-2);border:1px solid var(--border);
+  font-size:12px;color:var(--txt-2);
+}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.chip.warn .dot{background:var(--orange);box-shadow:0 0 8px var(--orange)}
+.date-pill{padding:6px 14px;border-radius:8px;background:var(--bg-2);border:1px solid var(--border);font-size:12px;color:var(--txt-1);white-space:nowrap}
+.search{width:220px;padding:7px 12px;border-radius:8px;background:var(--bg-2);border:1px solid var(--border);font-size:12px;color:var(--txt-1);outline:none}
+.search::placeholder{color:var(--txt-3)}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff2a3a,#b3000d);display:grid;place-items:center;font-weight:600;font-size:12px;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,0.06)}
+
+/* Sidebar */
+.sidebar{
+  grid-area:sidebar;
+  padding:20px 16px;
+  background:rgba(15,20,32,0.5);
+  border-right:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+.sidebar-title{font-size:11px;letter-spacing:2px;color:var(--txt-3);text-transform:uppercase;padding:0 12px 12px}
+.nav{display:flex;flex-direction:column;gap:6px}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px;border-radius:12px;
+  color:var(--txt-2);
+  font-size:14px;font-weight:500;
+  cursor:pointer;user-select:none;
+  transition:all .2s ease;position:relative;
+}
+.nav-item:hover{background:var(--bg-2);color:var(--txt-1)}
+.nav-item.active{background:linear-gradient(90deg,rgba(59,130,246,0.15),rgba(59,130,246,0.05));color:var(--txt-1)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--bg-3);font-size:15px}
+.nav-item[data-mod="overview"] .nav-icon{color:var(--blue);background:rgba(59,130,246,0.15)}
+.nav-item[data-mod="ai"] .nav-icon{color:#c084fc;background:rgba(168,85,247,0.15)}
+
+.sidebar-footer{
+  margin-top:24px;padding:14px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(59,130,246,0.15));
+  border:1px solid rgba(168,85,247,0.3);
+}
+.sidebar-footer-title{font-size:12px;color:var(--txt-2);margin-bottom:4px;font-weight:500}
+.sidebar-footer-text{font-size:11px;color:var(--txt-3);line-height:1.6}
+
+.sidebar-hint{
+  margin-top:auto;padding-top:16px;
+  font-size:10px;color:var(--txt-3);line-height:1.7;text-align:center;
+  border-top:1px dashed var(--border);
+}
+.sidebar-hint b{color:var(--txt-2);font-weight:500}
+
+/* Main */
+.main{grid-area:main;overflow-y:auto;padding:24px 28px}
+.module{display:none;animation:fadeIn .3s ease}
+.module.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}}
+
+.module-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;gap:16px}
+.module-head h1{font-size:24px;font-weight:600;letter-spacing:0.5px}
+.module-head .desc{font-size:12px;color:var(--txt-3);margin-top:4px}
+.module-head .actions{display:flex;gap:8px}
+.btn{padding:7px 14px;border-radius:8px;font-size:12px;background:var(--bg-2);border:1px solid var(--border);color:var(--txt-2);display:inline-flex;align-items:center;gap:6px;transition:.2s}
+.btn:hover{color:var(--txt-1);border-color:var(--border-strong)}
+.btn.primary{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;color:#fff}
+
+/* Cards */
+.card{background:var(--bg-1);border:1px solid var(--border);border-radius:14px;padding:18px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600;color:var(--txt-1);display:flex;align-items:center;gap:8px}
+.card-title::before{content:'';width:3px;height:14px;border-radius:2px;background:var(--accent)}
+.card-sub{font-size:11px;color:var(--txt-3)}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.kpi{background:var(--bg-1);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;backdrop-filter:blur(12px)}
+.kpi::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--kpi-color,var(--blue)) 0%,transparent 60%);opacity:.1}
+.kpi-label{font-size:11px;color:var(--txt-3);letter-spacing:1px;text-transform:uppercase}
+.kpi-value{font-size:32px;font-weight:700;margin:8px 0 6px;font-feature-settings:'tnum';color:var(--kpi-val,#f3f4f6)}
+.kpi-delta{font-size:12px;display:inline-flex;align-items:center;gap:4px;color:#ffffff}
+.kpi-delta.up,.kpi-delta.down,.kpi-delta.flat{color:#ffffff}
+
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.grid-2.even{grid-template-columns:1fr 1fr}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;max-height:330px;overflow-y:auto}
+.tl-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed var(--border);font-size:12px}
+.tl-item:last-child{border-bottom:none}
+.tl-date{color:var(--txt-3);width:56px;flex-shrink:0;font-variant-numeric:tabular-nums;font-size:11px;padding-top:1px}
+.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;background:var(--green);box-shadow:0 0 8px}
+.tl-dot.warn{background:var(--orange)}
+.tl-dot.info{background:var(--blue)}
+.tl-dot.purple{background:var(--purple)}
+.tl-content{flex:1;color:var(--txt-2);line-height:1.6}
+.tl-content strong{color:var(--txt-1);font-weight:500}
+
+/* SKU progress */
+.sku-row{display:grid;grid-template-columns:150px 150px 1fr 62px;gap:14px;align-items:center;padding:11px 0;border-bottom:1px dashed var(--border);font-size:12px}
+.sku-row:last-child{border-bottom:none}
+.sku-name{color:var(--txt-1);font-weight:500}
+.sku-nums{color:var(--txt-3);font-variant-numeric:tabular-nums;font-size:11px}
+.sku-bar{height:8px;border-radius:4px;background:var(--bg-3);overflow:hidden}
+.sku-fill{height:100%;border-radius:4px;transition:.3s}
+.sku-pct{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* Summary grid */
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.summary-item{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.summary-label{font-size:11px;color:var(--txt-3);letter-spacing:.5px}
+.summary-value{font-size:22px;font-weight:700;margin:6px 0 3px;font-variant-numeric:tabular-nums}
+.summary-delta{font-size:11px}
+.summary-delta.up{color:var(--green)}
+.summary-delta.down{color:var(--red)}
+
+/* Tag */
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:500}
+.tag.green{background:rgba(16,185,129,0.15);color:var(--green)}
+.tag.orange{background:rgba(245,158,11,0.15);color:var(--orange)}
+.tag.red{background:rgba(239,68,68,0.15);color:var(--red)}
+
+/* AI */
+.ai-banner{background:linear-gradient(135deg,rgba(168,85,247,0.2),rgba(59,130,246,0.2),rgba(6,182,212,0.2));border:1px solid rgba(168,85,247,0.3);border-radius:14px;padding:18px;margin-bottom:20px;display:flex;gap:16px;align-items:center}
+.ai-avatar{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#3b82f6);display:grid;place-items:center;font-size:22px;flex-shrink:0}
+.ai-content{flex:1}
+.ai-content h3{font-size:14px;margin-bottom:4px;color:var(--txt-1)}
+.ai-content p{font-size:12px;color:var(--txt-2);line-height:1.6}
+.insight-card{background:var(--bg-1);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:10px;padding:14px;margin-bottom:12px}
+.insight-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .insight-card p{font-size:12px;color:var(--txt-2);line-height:1.7}
+
+/* ===== 汉堡按钮（手机端显示） ===== */
+.hamburger{display:none;width:38px;height:38px;border-radius:9px;background:var(--bg-2);border:1px solid var(--border);font-size:18px;color:var(--txt-1);place-items:center;flex-shrink:0}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s ease}
+
+/* ===== 响应式：平板 / 小屏笔记本 ===== */
+@media (max-width:1024px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-2.even{grid-template-columns:1fr}
+}
+
+/* ===== 响应式：手机 ===== */
+@media (max-width:768px){
+  .hamburger{display:grid}
+  .topbar{gap:10px;padding:0 14px}
+  .brand-title{font-size:14px}
+  .brand-sub{display:none}
+  .topbar-tools{gap:8px}
+  .topbar-tools .chip,.topbar-tools .search,.date-pill{display:none}
+
+  .app{
+    grid-template-columns:1fr;
+    grid-template-rows:56px 1fr;
+    grid-template-areas:"topbar" "main";
+  }
+  /* 侧边栏 → 左侧抽屉 */
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;width:80vw;max-width:300px;
+    transform:translateX(-100%);transition:transform .25s ease;z-index:60;
+    background:rgba(13,18,30,0.98);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .overlay.show{opacity:1;pointer-events:auto}
+
+  .main{padding:16px 14px}
+  .module-head{flex-direction:column;align-items:flex-start;gap:10px}
+  .module-head h1{font-size:20px}
+  .module-head .actions{width:100%;flex-wrap:wrap}
+  .module-head .actions .btn{flex:1;justify-content:center}
+
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+  .kpi{padding:14px}
+  .kpi-value{font-size:24px}
+
+  .grid-2,.grid-2.even{grid-template-columns:1fr;gap:14px}
+
+  .sku-head{display:none}
+  .sku-row{
+    grid-template-columns:1fr auto;
+    grid-template-areas:"name pct" "nums bar";
+    gap:5px 10px;padding:12px 0;
+  }
+  .sku-name{grid-area:name;font-size:13px}
+  .sku-pct{grid-area:pct}
+  .sku-nums{grid-area:nums}
+  .sku-bar{grid-area:bar;width:100%}
+
+  .summary-grid{grid-template-columns:1fr 1fr}
+
+  /* SVG 图表按宽度自适应高度，不再固定 210px 挤压 */
+  .card svg{height:auto !important}
+
+  .ai-banner{flex-wrap:wrap}
+  .ai-banner .btn.primary{width:100%}
+  .timeline{max-height:none}
+}
+
+
+  /* 修复：粘性表头/表尾必须用不透明实色，否则滚动时数据行文字穿透重叠 */
+  table thead th{
+    background:#111827 !important;
+    background-color:#111827 !important;
+  }
+  table tfoot td{
+    background:#111827 !important;
+    background-color:#111827 !important;
+    position:sticky !important;
+    bottom:0 !important;
+    z-index:4 !important;
+    box-shadow:0 -1px 0 var(--border);
+  }
+  .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal-mask.hide{display:none}
+  .modal{width:100%;max-width:540px;max-height:86vh;display:flex;flex-direction:column;background:var(--bg-2);border:1px solid var(--border);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden}
+  .modal-head{padding:18px 22px 12px;border-bottom:1px solid var(--border)}
+  .modal-title{font-size:16px;font-weight:700;color:var(--txt-1)}
+  .modal-sub{margin-top:4px;font-size:11px;color:var(--txt-3);letter-spacing:.5px}
+  .modal-body{padding:14px 22px;font-size:12px;line-height:1.8;color:var(--txt-2);overflow:auto}
+  .modal-body strong{color:var(--txt-1)}
+  .modal-body .disc{margin-top:8px;padding-left:2px}
+  .modal-foot{padding:12px 22px 18px;display:flex;justify-content:flex-end;border-top:1px solid var(--border)}
+  .modal-btn{padding:8px 20px;border-radius:8px;border:1px solid var(--blue);background:var(--blue);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+  .modal-btn:hover{opacity:.88}
+  @media (max-width:640px){ .modal-body{font-size:11px} }
+  /* 折线图悬停提示 */
+  .chart-hit{cursor:crosshair}
+  .chart-tip{position:fixed;z-index:60;pointer-events:none;background:#0b1220;border:1px solid #374151;border-radius:8px;padding:9px 11px;font-size:11px;color:#e5e7eb;box-shadow:0 8px 22px rgba(0,0,0,.45);display:none;min-width:184px}
+  .chart-tip .t-h{font-weight:700;margin-bottom:6px;color:#f9fafb;font-size:12px}
+  .chart-tip .t-r{display:flex;justify-content:space-between;gap:16px;line-height:1.85}
+  .chart-tip .t-r b{font-variant-numeric:tabular-nums}
+  .chart-tip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<div id="chartTip" class="chart-tip"></div>
+<div class="app">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="打开菜单">☰</button>
+    <div class="brand">
+      <div class="brand-logo">
+        <!-- TCL 字标：内联 SVG 手绘路径，不依赖外部资源 -->
+        <svg width="26" height="14.5" viewBox="0 0 68 38" xmlns="http://www.w3.org/2000/svg" aria-label="TCL">
+          <g fill="#ffffff">
+            <!-- T -->
+            <path d="M2,8 H22 V13 H14.5 V30 H9.5 V13 H2 Z"/>
+            <!-- C -->
+            <path d="M42.07,10.57 A11,11 0 1 0 42.07,27.43 L38.86,23.60 A6,6 0 1 1 38.86,14.40 Z"/>
+            <!-- L -->
+            <path d="M48,8 H53 V25 H66 V30 H48 Z"/>
+          </g>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">TCL水机智能化看板</div>
+        <div class="brand-sub">SMART PRODUCTION DASHBOARD</div>
+      </div>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-tools">
+      <span class="chip"><span class="dot"></span>数据源已导入 · 水机测试数据.xlsx</span>
+      <span class="chip"><span class="dot"></span>数据更新于 2026-08-30 00:25</span>
+      <div class="date-pill" id="clock">2026-08-30 · 周日</div>
+      <input class="search" placeholder="搜索 SKU、订单、设备…" />
+      <div class="avatar">TCL</div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-title">主控模块 · 8</div>
+    <nav class="nav">
+      <div class="nav-item active" data-mod="overview" onclick="showModule('overview')">
+        <div class="nav-icon">📊</div>
+        <div>本月总览</div>
+      </div>
+      <div class="nav-item" data-mod="pai" onclick="showModule('pai')">
+        <div class="nav-icon">🗓️</div>
+        <div>排产计划</div>
+      </div>
+      <div class="nav-item" data-mod="order" onclick="showModule('order')">
+        <div class="nav-icon">📦</div>
+        <div>订单池</div>
+      </div>
+      <div class="nav-item" data-mod="detail" onclick="showModule('detail')">
+        <div class="nav-icon">📋</div>
+        <div>库存明细</div>
+      </div>
+      <div class="nav-item" data-mod="cum" onclick="showModule('cum')">
+        <div class="nav-icon">📈</div>
+        <div>累计达成</div>
+      </div>
+      
+      
+      
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-title">智擎 AI 助手</div>
+      <div class="sidebar-footer-text">基于近 30 天排产数据训练，可一句话生成方案、回答数据问题。</div>
+    </div>
+
+    <div class="sidebar-hint">
+      更多模块陆续接入中<br>
+      <b>设备状态 · 物料齐套<br>交付达成 · 异常预警</b>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- 1. 本月总览 -->
+    <section class="module active" id="mod-overview">
+      <div class="module-head">
+        <div>
+          <h1>中东非 · 本月总览 · 2026 年 8 月</h1>
+          <div class="desc">2026年8月 · 数据源提交于 2026-08-31 15:39</div>
+        </div>
+        <div class="actions">
+          <button class="btn">刷新 ⟳</button>
+          <button class="btn">导出月报</button>
+          <button class="btn primary">调整排产 ›</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi" style="--kpi-color:var(--blue)">
+          <div class="kpi-label">本月排产</div>
+          <div class="kpi-value" style="--kpi-val:#f3f4f6">4,862<span style="font-size:14px;color:var(--txt-3);font-weight:500"> 台</span></div>
+          <div class="kpi-delta">8月排产 · 已排 12 单</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--cyan)">
+          <div class="kpi-label">本月已发货</div>
+          <div class="kpi-value" style="--kpi-val:#f3f4f6">6,096<span style="font-size:14px;color:var(--txt-3);font-weight:500"> 台</span></div>
+          <div class="kpi-delta">占本片区排产 125.4% · 最新出入库数据</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--red)">
+          <div class="kpi-label">同比增幅</div>
+          <div class="kpi-value" style="--kpi-val:var(--red)">-60.3%</div>
+          <div class="kpi-delta">较 2025年8月同期 -9,264 台</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--red)">
+          <div class="kpi-label">KPI 达成</div>
+          <div class="kpi-value" style="--kpi-val:var(--red)">30.5%</div>
+          <div class="kpi-delta">缺口 13,904 台 · KPI=2.0万</div>
+        </div>
+        
+        <div class="kpi" style="--kpi-color:var(--orange)">
+          <div class="kpi-label">当前库存</div>
+          <div class="kpi-value" style="--kpi-val:#f3f4f6">7,174<span style="font-size:14px;color:var(--txt-3);font-weight:500"> 台</span></div>
+          <div class="kpi-delta">8月末结存（本片区）</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">当月排产分片区</div>
+            <div class="card-sub">单位 台 · 2026年8月 · 排产明细</div>
+          </div>
+          <svg viewBox="0 0 480 210" style="width:100%;height:210px;">
+            <defs>
+              <linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#3b82f6" stop-opacity=".95"/>
+                <stop offset="1" stop-color="#3b82f6" stop-opacity=".25"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(75,85,99,0.3)" stroke-dasharray="2,2">
+              <line x1="46" y1="30"  x2="470" y2="30"/>
+              <line x1="46" y1="68"  x2="470" y2="68"/>
+              <line x1="46" y1="105" x2="470" y2="105"/>
+              <line x1="46" y1="142" x2="470" y2="142"/>
+            </g>
+            <line x1="46" y1="180" x2="470" y2="180" stroke="rgba(75,85,99,0.55)"/>
+            <g fill="#6b7280" font-size="9">
+              <text x="10" y="34">1.0万</text>
+              <text x="14" y="71">7500</text>
+              <text x="18" y="108">5000</text>
+              <text x="14" y="145">2500</text>
+            </g>
+            
+            
+            
+            
+            <rect x="316" y="107" width="64" height="73"  rx="3" fill="url(#gArea)"/>
+            <text x="348" y="100" fill="#e5e7eb" font-size="11" text-anchor="middle" font-weight="600">4,862</text>
+            <g fill="#9ca3af" font-size="11" text-anchor="middle">
+              
+              
+              <text x="348" y="196">中东非</text>
+            </g>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);font-size:12px;color:var(--txt-3)"><div>中东非排产 <strong style="color:var(--txt-1);font-size:17px;font-weight:700">4,862</strong> 台</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">当前库存分片区</div>
+            <div class="card-sub">单位 台 · 2026年8月 · 最新出入库数据</div>
+          </div>
+          <svg viewBox="0 0 480 210" style="width:100%;height:210px;">
+            <defs>
+              <linearGradient id="gStock" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f59e0b" stop-opacity=".95"/>
+                <stop offset="1" stop-color="#f59e0b" stop-opacity=".25"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(75,85,99,0.3)" stroke-dasharray="2,2">
+              <line x1="46" y1="20" x2="470" y2="20"/>
+              <line x1="46" y1="60" x2="470" y2="60"/>
+              <line x1="46" y1="100" x2="470" y2="100"/>
+              <line x1="46" y1="140" x2="470" y2="140"/>
+            </g>
+            <line x1="46" y1="180" x2="470" y2="180" stroke="rgba(75,85,99,0.55)"/>
+            <g fill="#6b7280" font-size="9">
+              <text x="6" y="24">8k</text>
+              <text x="6" y="64">6k</text>
+              <text x="6" y="104">4k</text>
+              <text x="6" y="144">2k</text>
+            </g>
+            
+            
+            
+            
+            <rect x="316" y="37" width="64" height="143" rx="3" fill="url(#gStock)"/>
+            <text x="348" y="30" fill="#e5e7eb" font-size="11" text-anchor="middle" font-weight="600">7,174</text>
+            <g fill="#9ca3af" font-size="11" text-anchor="middle">
+              
+              
+              <text x="348" y="196">中东非</text>
+            </g>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);font-size:12px;color:var(--txt-3)"><div>中东非库存 <strong style="color:var(--txt-1);font-size:17px;font-weight:700">7,174</strong> 台</div></div>
+        </div>
+
+      </div>
+
+    </section>    <section class="module" id="mod-pai">
+      <div class="module-head">
+        <div>
+          <h1>排产计划</h1>
+          <div class="desc">数据源：排产明细 · 2026年8月已排产（对比同期 / 对比KPI）</div>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" style="--kpi-color:var(--blue)">
+          <div class="kpi-label">8月已排产</div>
+          <div class="kpi-value" style="--kpi-val:#f3f4f6">4,862<span style="font-size:14px;color:var(--txt-3);font-weight:500"> 台</span></div>
+          <div class="kpi-delta">12 单 · 已上线</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--cyan)">
+          <div class="kpi-label">对比8月同期</div>
+          <div class="kpi-value" style="--kpi-val:var(--red)">31.7%</div>
+          <div class="kpi-delta">vs 2025年8月发货 15,360 台</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--amber)">
+          <div class="kpi-label">对比8月KPI</div>
+          <div class="kpi-value" style="--kpi-val:var(--red)">24.3%</div>
+          <div class="kpi-delta">vs 2026年8月 KPI 20,000 台</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">排产分片区汇总</div>
+          <div class="card-sub">单位 台 · 2026年8月已排产</div>
+        </div>
+        <div style="display:flex;gap:8px;padding:6px 0"><div style="text-align:center;flex:1"><div style="font-size:11px;color:var(--txt-3)">中东非</div><div style="font-size:20px;font-weight:700;color:var(--txt-1);margin-top:4px">4,862</div></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">本月排产明细 · 同片区同品牌汇总（按订单量降序）</div>
+          <div class="card-sub">片区 / 品牌 / 订单量　·　可按片区筛选</div>
+        </div>
+        <div style="padding:4px 0 8px 0">
+          <span style="font-size:12px;color:var(--txt-3)">中东非 · 仅本片区数据</span>
+        </div>
+        <div style="max-height:58vh;overflow:auto;border-radius:10px">
+          <table id="paiTable" style="width:100%;border-collapse:collapse">
+            <thead>
+              <tr style="position:sticky;top:0;background:var(--bg-2);z-index:1">
+                <th style="padding:10px;text-align:left;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">片区</th>
+                <th style="padding:10px;text-align:left;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">品牌</th>
+                <th style="padding:10px;text-align:right;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">订单量</th>
+              </tr>
+            </thead>
+            <tbody><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap;font-weight:600">Premier</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,500</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap;font-weight:600">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,283</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap;font-weight:600">WANSA</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,120</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap;font-weight:600">SUPER GENERAL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">959</td></tr></tbody>
+            
+          </table>
+        </div>
+      </div>
+    </section>    <section class="module" id="mod-order">
+      <div class="module-head">
+        <div>
+          <h1>订单池</h1>
+          <div class="desc">数据源：排产明细 · 暂未排产（9月及以后计划 + 未排产）· 共 73 单</div>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" style="--kpi-color:var(--blue)">
+          <div class="kpi-label">当前订单池总量</div>
+          <div class="kpi-value" style="--kpi-val:#f3f4f6">33,331<span style="font-size:14px;color:var(--txt-3);font-weight:500"> 台</span></div>
+          <div class="kpi-delta">待排订单 43 单 · 9月及以后</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--red)">
+          <div class="kpi-label">对比9月同期</div>
+          <div class="kpi-value" style="--kpi-val:var(--red)">237.8%</div>
+          <div class="kpi-delta">vs 2025年9月发货 14,017 台</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--red)">
+          <div class="kpi-label">对比9月 KPI</div>
+          <div class="kpi-value" style="--kpi-val:var(--red)">185.2%</div>
+          <div class="kpi-delta">vs 2026年9月 KPI 18,000 台</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">订单池分片区汇总</div>
+          <div class="card-sub">单位 台 · 暂未排产</div>
+        </div>
+        <div style="display:flex;gap:8px;padding:6px 0"><div style="text-align:center;flex:1"><div style="font-size:11px;color:var(--txt-3)">中东非</div><div style="font-size:20px;font-weight:700;color:var(--txt-1);margin-top:4px">33,331</div></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">订单池明细 · 按计划上线时间排序</div>
+          <div class="card-sub">片区 / 生产单号 / 品牌 / 订单量 / 计划上线 / 备注　·　可按片区筛选</div>
+        </div>
+        <div style="padding:4px 0 8px 0">
+          <span style="font-size:12px;color:var(--txt-3)">中东非 · 仅本片区数据</span>
+        </div>
+        <div style="max-height:52vh;overflow:auto;border-radius:10px">
+          <table id="orderTable" style="width:100%;border-collapse:collapse">
+            <thead>
+              <tr style="position:sticky;top:0;background:var(--bg-2);z-index:3;box-shadow:0 1px 0 var(--border);">
+                <th style="padding:10px;text-align:left;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">片区</th>
+                <th style="padding:10px;text-align:left;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">生产单号</th>
+                <th style="padding:10px;text-align:left;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">品牌</th>
+                <th style="padding:10px;text-align:right;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">订单量</th>
+                <th style="padding:10px;text-align:left;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">计划上线</th>
+                <th style="padding:10px;text-align:left;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">备注</th>
+              </tr>
+            </thead>
+            <tbody><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604141459F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">ASTECH</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,176</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">风险订单待确认</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605145823F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">Ziffler</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">500</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">风险订单待确认</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605145823F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">Ziffler</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">500</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">风险订单待确认</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2512131279F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">NIKAI</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,233</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">中东，暂停生产</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2512131279F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">NIKAI</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">872</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">中东，暂停生产</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608153001F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,003</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152886F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">863</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152884F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">3,597</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152856F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,650</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152649F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">GENERAL SUPREME</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,386</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152567F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">3,154</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152557F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">MILLENNIUM</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">625</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">暂未排产</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604142676F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">480</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-01</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">物料返工，待确认生产</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2607150445F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">NIKAI</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">410</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-02</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152059F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SPJ</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">950</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-08</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152059F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SPJ</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">925</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-08</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143679F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">General Goldin</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">415</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-10</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143679F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">General Goldin</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">460</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-10</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143679F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">General Goldin</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">588</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-10</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143679F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">General Goldin</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">588</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-10</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143679F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">General Goldin</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">588</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-10</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2512131279F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">NIKAI</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">367</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-11</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">拆单，原批次1600台</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2512131279F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">NIKAI</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">494</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-11</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2606148039F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">BASIC</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,176</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-11</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2606148039F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">BASIC</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">840</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-12</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2607150444F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">GENERAL SUPREME</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,045</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-14</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">延期到9月中旬，沙特订单</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2607150444F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">GENERAL SUPREME</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">438</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-15</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">延期到9月中旬，沙特订单</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2607150416F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SUPER GENERAL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">900</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-15</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">延期到9月中旬，沙特订单</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2607150416F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SUPER GENERAL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">415</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-15</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">延期到9月中旬，沙特订单</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2607150432F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">GENERAL SUPREME</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">440</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-16</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">延期到9月中旬，沙特订单</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2607150432F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">GENERAL SUPREME</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">440</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-17</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">延期到9月中旬，沙特订单</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152007F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">283</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-18</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152007F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">294</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-18</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-18</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-18</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-18</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-18</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-19</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-19</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-19</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608151019F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">400</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-19</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152719F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SUPER GENERAL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">420</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-22</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2608152268F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SUPER GENERAL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">616</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">2026-09-22</td><td style="padding:8px 10px;color:var(--txt-3);font-size:12px">—</td></tr></tbody>
+            
+          </table>
+        </div>
+      </div>
+    </section>    <section class="module" id="mod-cum">
+      <div class="module-head">
+        <div>
+          <h1>累计达成</h1>
+          <div class="desc">数据源：23-26年出入库明细(1-7月) + 最新出入库数据(8月) · 2026年1-8月 · 单位 万台 vs 累计KPI</div>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" style="--kpi-color:var(--pink)">
+          <div class="kpi-label">累计实际出货</div>
+          <div class="kpi-value" style="--kpi-val:#f3f4f6">26.7<span style="font-size:14px;color:var(--txt-3);font-weight:500"> 万台</span></div>
+          <div class="kpi-delta">2026年1-8月 · 出库口径</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--green)">
+          <div class="kpi-label">对比同期 · 同比增长</div>
+          <div class="kpi-value" style="--kpi-val:var(--green)">+13.7%</div>
+          <div class="kpi-delta" style="color:var(--green)">差异 +3.4 万台 · 26年26.7万 vs 25年23.2万</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--red)">
+          <div class="kpi-label">累计 KPI 达成率</div>
+          <div class="kpi-value" style="--kpi-val:var(--red)">55.5%</div>
+          <div class="kpi-delta" style="color:var(--red)">未达成 · 差异 +6.8 万台</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">中东非累计出货 vs 累计KPI / 去年同期</div>
+          <div class="card-sub">2026年1-8月 · 单位 万台</div>
+        </div>
+        <table style="width:100%;border-collapse:separate;border-spacing:0;margin-top:4px;font-size:12px">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border)">
+              <th style="padding:8px 10px;color:var(--txt-3);font-size:11px;font-weight:600;text-align:left">片区</th>
+              <th style="padding:8px 10px;color:var(--txt-3);font-size:11px;font-weight:600;text-align:right">实际出货</th>
+              <th style="padding:8px 10px;color:var(--txt-3);font-size:11px;font-weight:600;text-align:right">累计KPI</th>
+              <th style="padding:8px 10px;color:var(--txt-3);font-size:11px;font-weight:600;text-align:right">达成率</th>
+              <th style="padding:8px 10px;color:var(--txt-3);font-size:11px;font-weight:600;text-align:right">缺口</th>
+              <th style="padding:8px 10px;color:var(--txt-3);font-size:11px;font-weight:600;text-align:right">去年同期</th>
+              <th style="padding:8px 10px;color:var(--txt-3);font-size:11px;font-weight:600;text-align:right">同比</th>
+            </tr>
+          </thead>
+          <tbody><tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-1)">中东非</td><td style="padding:8px 10px;color:var(--txt-1);text-align:right">9.1</td><td style="padding:8px 10px;color:var(--txt-2);text-align:right">15.4</td><td style="padding:8px 10px;color:var(--red);text-align:right;font-weight:600">59.5%</td><td style="padding:8px 10px;color:var(--red);text-align:right;font-weight:600">-6.2</td><td style="padding:8px 10px;color:var(--txt-2);text-align:right">10.1</td><td style="padding:8px 10px;color:var(--red);text-align:right;font-weight:600">-9.7%</td></tr></tbody>
+          </table>
+      </div>
+      
+      
+    </section>    <section class="module" id="mod-detail">
+      <div class="module-head">
+        <div>
+          <h1>库存明细</h1>
+          <div class="desc">数据源：最新出入库数据 · 按生产单号透视汇总 · 2026年8月（已剔除 0 库存）· 期末库存降序</div>
+        </div>
+      </div>
+<div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">库存分片区汇总</div>
+          <div class="card-sub">单位 台 · 期末库存</div>
+        </div>
+        <div style="display:flex;gap:8px;padding:6px 0"><div style="text-align:center;flex:1"><div style="font-size:11px;color:var(--txt-3)">中东非</div><div style="font-size:20px;font-weight:700;color:var(--txt-1);margin-top:4px">7,174</div></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">库存明细清单</div>
+          <div class="card-sub">片区 / 生产单号 / 品牌 / 期末库存（已剔除 0 库存行）· 可按片区筛选</div>
+        </div>
+        <div style="padding:4px 0 8px 0">
+          <span style="font-size:12px;color:var(--txt-3)">中东非 · 仅本片区数据</span>
+        </div>
+        <div style="max-height:62vh;overflow:auto;border-radius:10px">
+          <table id="invTable" style="width:100%;border-collapse:separate;border-spacing:0">
+            <thead>
+              <tr>
+                <th style="position:sticky;top:0;background:var(--bg-2);z-index:3;padding:10px;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border);text-align:left">片区</th>
+                <th style="position:sticky;top:0;background:var(--bg-2);z-index:3;padding:10px;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border);text-align:left">生产单号</th>
+                <th style="position:sticky;top:0;background:var(--bg-2);z-index:3;padding:10px;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border);text-align:left">品牌</th>
+                <th style="position:sticky;top:0;background:var(--bg-2);z-index:3;padding:10px;color:var(--txt-3);font-size:11px;font-weight:600;border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border);text-align:right">期末库存</th>
+              </tr>
+            </thead>
+            <tbody><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2601132708F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">UNEVA</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,232</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2601132708F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">UNEVA</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1,232</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2601132708F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">UNEVA</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">704</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2511126706F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">Aftron</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">616</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2603139542F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">ASTECH</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">588</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143744F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">HAAM ELECTRIC</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">531</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2601132708F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">UNEVA</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">352</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605144700F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">307</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143744F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">HAAM ELECTRIC</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">300</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605144700F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">293</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604142676F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">230</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604142676F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">220</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604142676F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">204</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604142098F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SUPER GENERAL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">198</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2506115596F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">GENERAL SUPREME</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">75</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2602136398F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">Dexon</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">57</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604143055F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">12</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2605143831F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">9</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2603139787F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">SCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">6</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2601132842F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">WANSA</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">5</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2511128147F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">TCL</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2603138332F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">Premier</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1</td></tr><tr data-region="中东非" style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;color:var(--txt-2);font-size:12px;white-space:nowrap">中东非</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;white-space:nowrap">MO2604143341F</td><td style="padding:8px 10px;color:var(--txt-2);font-size:12px">Ziffler</td><td style="padding:8px 10px;color:var(--txt-1);font-size:12px;text-align:right">1</td></tr></tbody>
+            
+          </table>
+        </div>
+      </div>
+    </section>    <script>
+  function showModule(key){
+    document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('mod-'+key).classList.add('active');
+    document.querySelector('.nav-item[data-mod="'+key+'"]').classList.add('active');
+    document.querySelector('.main').scrollTop = 0;
+
+    const colorMap = { overview:'#3b82f6', pai:'#06b6d4', order:'#f59e0b', detail:'#10b981', ai:'#a855f7', cum:'#ec4899', market:'#14b8a6', env:'#f97316' };
+    document.documentElement.style.setProperty('--accent', colorMap[key]);
+
+    // 手机端：点完导航自动收起抽屉
+    if (window.matchMedia('(max-width:768px)').matches) {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    }
+  }
+
+
+  function filterRows(tableId, region){
+    var t=document.getElementById(tableId);
+    if(!t) return;
+    var rows=t.querySelectorAll('tbody tr');
+    var n=0, sum=0;
+    rows.forEach(function(r){
+      var show=(region==='全部' || r.getAttribute('data-region')===region);
+      r.style.display = show ? '' : 'none';
+      if(show){
+        n++;
+        var tds=r.children;
+        if(tds[3]){
+          var v=parseFloat((tds[3].textContent||'').replace(/,/g,''));
+          if(!isNaN(v)) sum+=v;
+        }
+      }
+    });
+    var tf=t.querySelector('tfoot tr');
+    if(tf){
+      var cells=tf.children;
+      if(cells[0]) cells[0].innerHTML = cells[0].innerHTML.replace(/·\s*\d+/, '· '+n);
+      if(cells[1]) cells[1].textContent = sum.toLocaleString('en-US');
+    }
+  }
+
+
+  function filterRows(tableId, region){
+    var t=document.getElementById(tableId);
+    if(!t) return;
+    var rows=t.querySelectorAll('tbody tr');
+    var n=0, sum=0;
+    rows.forEach(function(r){
+      var show=(region==='全部' || r.getAttribute('data-region')===region);
+      r.style.display = show ? '' : 'none';
+      if(show){
+        n++;
+        var tds=r.children;
+        if(tds[3]){
+          var v=parseFloat((tds[3].textContent||'').replace(/,/g,''));
+          if(!isNaN(v)) sum+=v;
+        }
+      }
+    });
+    var tf=t.querySelector('tfoot tr');
+    if(tf){
+      var cells=tf.children;
+      if(cells[0]) cells[0].innerHTML = cells[0].innerHTML.replace(/·\s*\d+/, '· '+n);
+      if(cells[1]) cells[1].textContent = sum.toLocaleString('en-US');
+    }
+  }
+
+
+  function filterRows(tableId, region){
+    var t=document.getElementById(tableId);
+    if(!t) return;
+    var rows=t.querySelectorAll('tbody tr');
+    var n=0, sum=0;
+    rows.forEach(function(r){
+      var show=(region==='全部' || r.getAttribute('data-region')===region);
+      r.style.display = show ? '' : 'none';
+      if(show){
+        n++;
+        var tds=r.children;
+        if(tds[3]){
+          var v=parseFloat((tds[3].textContent||'').replace(/,/g,''));
+          if(!isNaN(v)) sum+=v;
+        }
+      }
+    });
+    var tf=t.querySelector('tfoot tr');
+    if(tf){
+      var cells=tf.children;
+      if(cells[0]) cells[0].innerHTML = cells[0].innerHTML.replace(/·\s*\d+/, '· '+n);
+      if(cells[1]) cells[1].textContent = sum.toLocaleString('en-US');
+    }
+  }
+
+  function toggleSidebar(){
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+  }
+
+  // 点击右侧内容区（未选中任何导航时）也能收起手机抽屉
+  document.querySelector('.main').addEventListener('click', function(){
+    if (window.matchMedia('(max-width:768px)').matches && document.querySelector('.sidebar').classList.contains('open')) {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    }
+  });
+  var sortState = {};
+  function sortTable(tableId, colIdx){
+    var t = document.getElementById(tableId);
+    if(!t) return;
+    var tbody = t.querySelector('tbody');
+    if(!tbody) return;
+    var ths = t.querySelectorAll('thead th');
+    var key = tableId + '-' + colIdx;
+    var dir = sortState[key] === 'asc' ? 'desc' : 'asc';
+    sortState[key] = dir;
+    ths.forEach(function(th){ var s = th.querySelector('.arr'); if(s) s.textContent = ''; });
+    var arrow = ths[colIdx] ? ths[colIdx].querySelector('.arr') : null;
+    if(arrow) arrow.textContent = dir === 'asc' ? ' ▲' : ' ▼';
+    var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+    rows.sort(function(a, b){
+      var av = parseFloat(a.children[colIdx].getAttribute('data-sort'));
+      var bv = parseFloat(b.children[colIdx].getAttribute('data-sort'));
+      if(isNaN(av)) av = -Infinity;
+      if(isNaN(bv)) bv = -Infinity;
+      return dir === 'asc' ? av - bv : bv - av;
+    });
+    rows.forEach(function(r){ tbody.appendChild(r); });
+  }
+
+  function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+  function updateClock(){
+    var el = document.getElementById('clock');
+    if(!el) return;
+    var d = new Date();
+    var wk = ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+    el.textContent = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate())
+      + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ' · ' + wk;
+  }
+  updateClock();
+  setInterval(updateClock, 15000);
+
+  (function(){
+    function initModal(){
+      var mask = document.getElementById('welcomeMask');
+      var btn = document.getElementById('welcomeBtn');
+      if(!mask) return;
+      function closeModal(){
+        mask.classList.add('hide');
+        document.body.style.overflow = '';
+      }
+      mask.classList.remove('hide');
+      document.body.style.overflow = 'hidden';
+      if(btn) btn.addEventListener('click', closeModal);
+      mask.addEventListener('click', function(e){ if(e.target === mask) closeModal(); });
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape' || e.key === 'Enter') closeModal();
+      });
+    }
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', initModal);
+    } else {
+      initModal();
+    }
+  })();
+
+  // 折线图悬停提示
+  (function(){
+                                    var CHART=[
+      {m:'1月',a:34162,s:33675,k:42000},
+      {m:'2月',a:42016,s:50285,k:63000},
+      {m:'3月',a:82053,s:65355,k:97000},
+      {m:'4月',a:118996,s:99126,k:139000},
+      {m:'5月',a:161608,s:123185,k:179000},
+      {m:'6月',a:209829,s:162653,k:224000},
+      {m:'7月',a:245789,s:198498,k:270000},
+      {m:'8月',a:266576,s:232204,k:310000}
+    ];
+    var tip=document.getElementById('chartTip');
+    if(!tip) return;
+    function fmt(n){return n.toLocaleString('en-US');}
+    function show(d,ev){
+      var rate=d.a/d.k, yoy=d.a/d.s-1;
+      var rc=rate>=1?'#22c55e':'#ef4444';
+      var yc=yoy>=0?'#22c55e':'#ef4444';
+      tip.innerHTML='<div class="t-h">'+d.m+' 累计</div>'
+        +'<div class="t-r"><span><span class="dot" style="background:#3b82f6"></span>实际累计</span><b>'+fmt(d.a)+' 台</b></div>'
+        +'<div class="t-r"><span><span class="dot" style="background:#f59e0b"></span>同期累计</span><b>'+fmt(d.s)+' 台</b></div>'
+        +'<div class="t-r"><span><span class="dot" style="background:#a855f7"></span>累计KPI</span><b>'+fmt(d.k)+' 台</b></div>'
+        +'<div class="t-r"><span>达成率</span><b style="color:'+rc+'">'+(rate*100).toFixed(1)+'%</b></div>'
+        +'<div class="t-r"><span>累计同比</span><b style="color:'+yc+'">'+(yoy>=0?'+':'')+(yoy*100).toFixed(1)+'%</b></div>';
+      tip.style.display='block';
+      var tw=tip.offsetWidth||200, th=tip.offsetHeight||160;
+      var gap=14;
+      var x=ev.clientX+gap;                 // 默认：鼠标右下角
+      var y=ev.clientY+gap;
+      if(x+tw>window.innerWidth-gap) x=ev.clientX-tw-gap;   // 右下角放不下 → 左下角
+      if(x<gap) x=gap;
+      if(y+th>window.innerHeight-gap) y=ev.clientY-th-gap;   // 底部放不下 → 翻到鼠标上方
+      if(y<gap) y=gap;
+      tip.style.left=x+'px'; tip.style.top=y+'px';
+    }
+    function hide(){tip.style.display='none';}
+    document.querySelectorAll('.chart-hit').forEach(function(r){
+      var d=CHART[+r.getAttribute('data-m')];
+      r.addEventListener('mousemove',function(e){show(d,e);});
+      r.addEventListener('mouseleave',hide);
+    });
+  })();
+
+  // AI 对话：对话智擎（纯前端直连 DeepSeek，数据内嵌 data.json）
+  (function(){
+    var BASE = window.AI_API_BASE || '';
+    var API = 'https://api.deepseek.com/v1/chat/completions';
+    var MODEL = 'deepseek-reasoner';
+    // 内置默认密钥：用户授权用于分享场景（链接不公开外传时共用此额度）；可留空改用自己浏览器输入的 key
+    var DEFAULT_KEY = 'sk-b759e15a0bba476baee0de220a1f2192';
+    var log = document.getElementById('aiLog');
+    var input = document.getElementById('aiInput');
+    var send = document.getElementById('aiSend');
+    var keyEl = document.getElementById('aiKey');
+    if(!log || !input || !send) return;
+
+    var DATA = null;
+    fetch(BASE + './data.json').then(function(r){return r.json();}).then(function(d){DATA=d;})
+      .catch(function(){ /* 数据缺失时仍可对话，只是无上下文 */ });
+
+    var SID_KEY = 'zhixiang_sid';
+    var sid = localStorage.getItem(SID_KEY);
+    if(!sid){ sid = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem(SID_KEY, sid); }
+    function loadHist(){ try{ return JSON.parse(localStorage.getItem('zhixiang_hist_' + sid) || '[]'); }catch(e){ return []; } }
+    function saveHist(h){ localStorage.setItem('zhixiang_hist_' + sid, JSON.stringify(h.slice(-40))); }
+    var hist = loadHist();
+
+    function buildSystem(d){
+      if(!d) return '你是水机生产看板的数据助手，请基于常识简短回答。';
+      return '你是“智擎”，一家水机生产企业的资深经营分析顾问。下面提供了看板的聚合数据（JSON 格式）。回答用户问题时，请按以下结构层层递进：\n'
+        + '1) 定位问题涉及的数据维度（哪个片区/品牌/月份/指标）；\n'
+        + '2) 给出关键数字（务必从数据中精确取值，不要估算或编造）；\n'
+        + '3) 与 KPI 目标、25年同期做对比，说明达成率/差距；\n'
+        + '4) 关联库存、订单池与排产，判断背后的业务含义（是订单不足、发货延迟还是库存积压）；\n'
+        + '5) 给出一句可执行的结论或建议。\n'
+        + '要求：用中文、简洁专业；若数据不足，明确说明“当前数据未包含该项”，不要臆测。\n'
+        + '查品牌级明细读 brand_ship（26年各月各品牌发货）与 brand_plan（排产：by_order_month=按下单月、by_online_month=按上线月）；order_pool 为在池订单；inventory 为库存台账。\n'
+        + '查分片区明细读 region_ship（26年各月各片区发货）与 region_plan（分片区排产）；regions 为1-8月各片区累计（实际/累计KPI/达成率/同比25年）。\n'
+        + '涉及“某品牌+某片区+某月”等交叉查询时，必须从 ship_detail（26年 品牌×片区×月 原始发货明细，数组：{月,片区,品牌,发货}）中按条件筛选并求和，不要凭品牌/片区各自的汇总推断；订单级问题从 order_detail（{片区,品牌,订单量,下单月,上线月}）筛选。\n\n'
+        + '数据(JSON):\n' + JSON.stringify(d);
+    }
+
+    function bubble(text, who){
+      var d = document.createElement('div');
+      d.style.cssText = 'padding:12px;border-radius:10px;font-size:12px;max-width:92%;line-height:1.7;white-space:pre-wrap;' +
+        (who === 'user'
+          ? 'background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:var(--txt-2);align-self:flex-end'
+          : 'background:var(--bg-2);color:var(--txt-1);align-self:flex-start');
+      d.textContent = text;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+      return d;
+    }
+    function ask(q){
+      q = (q || '').trim();
+      if(!q) return;
+      bubble(q, 'user');
+      input.value = '';
+      var thinking = bubble('智擎正在思考…', 'ai');
+      if(!DATA){ thinking.remove(); bubble('数据未加载，请刷新页面后重试。', 'ai'); return; }
+      var key = (keyEl && keyEl.value.trim()) || localStorage.getItem('zhixiang_key') || DEFAULT_KEY;
+      try { localStorage.setItem('zhixiang_key', key); } catch(e){}
+      var messages = [{role:'system', content: buildSystem(DATA)}].concat(hist, [{role:'user', content: q}]);
+      fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify({ model: MODEL, messages: messages, temperature: 1.0, stream: false })
+      })
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          thinking.remove();
+          var ans = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content)
+            ? j.choices[0].message.content.trim()
+            : ('调用失败：' + (j.error ? JSON.stringify(j.error) : '未知错误'));
+          hist.push({role:'user', content: q});
+          hist.push({role:'assistant', content: ans});
+          saveHist(hist);
+          bubble(ans, 'ai');
+        })
+        .catch(function(e){ thinking.remove(); bubble('连接失败：' + e, 'ai'); });
+    }
+    send.addEventListener('click', function(){ ask(input.value); });
+    input.addEventListener('keydown', function(e){ if(e.key === 'Enter') ask(input.value); });
+    document.querySelectorAll('.ai-chip').forEach(function(c){
+      c.addEventListener('click', function(){ ask(c.getAttribute('data-q')); });
+    });
+    var nb = document.getElementById('aiNew');
+    if(nb) nb.addEventListener('click', function(){
+      sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem(SID_KEY, sid); hist = []; saveHist(hist);
+      log.innerHTML = ''; bubble('已开启新对话，请问我吧。', 'ai');
+    });
+  })();
+
+</script>
+
+<div class="modal-mask" id="welcomeMask">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="modal-head">
+      <div class="modal-title" id="welcomeTitle">TCL 水机智能化看板</div>
+      <div class="modal-sub">SMART PRODUCTION DASHBOARD</div>
+    </div>
+    <div class="modal-body">
+      <div><strong>制作人：</strong>阿山</div>
+      <div class="disc"><strong>免责声明</strong></div>
+      <div class="disc">1. 本看板数据来源于内部业务数据（出入库明细、排产计划、订单池、KPI）及公开贸易统计，仅供内部经营分析与参考，<strong>不构成任何对外承诺、报价或决策依据</strong>。</div>
+      <div class="disc">2. 海关数据为金额 / 重量口径，与本看板按台数、按片区的统计口径不同，仅作<strong>方向性对比</strong>，非一一对应。</div>
+      <div class="disc">3. 部分月份数据可能存在录入延迟（如最新月度发货尚未完全入账），达成率、同比等指标会随数据补录而变化，请以最新数据为准。</div>
+      <div class="disc">4. 涉及机会判断、预测与行动建议的内容，均基于历史数据推演，实际结果受市场、产能、认证、物流等多重因素影响，请结合业务实际审慎使用。</div>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-btn" id="welcomeBtn">我已阅读 · 进入看板</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 访问密码锁（公开仓库下的简易访问控制） ============ -->
+<style>
+#gate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at top left,#1e293b 0%,#0a0e1a 50%,#050810 100%);}
+#gate .g-card{width:min(90vw,360px);background:rgba(15,23,42,.85);border:1px solid rgba(99,102,241,.35);
+  border-radius:16px;padding:32px 28px;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center;backdrop-filter:blur(12px);}
+#gate h2{font-size:18px;margin-bottom:6px;color:#f3f4f6;}
+#gate p{font-size:13px;color:#94a3b8;margin-bottom:18px;}
+#gate input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(148,163,184,.3);
+  background:rgba(2,6,23,.6);color:#f3f4f6;font-size:15px;text-align:center;letter-spacing:2px;margin-bottom:14px;outline:none;}
+#gate input:focus{border-color:#6366f1;}
+#gate button{width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:#fff;font-size:15px;font-weight:600;}
+#gate .err{color:#f87171;font-size:12px;min-height:16px;margin-top:8px;}
+</style>
+<div id="gate">
+  <div class="g-card">
+    <h2>TCL 水机看板</h2>
+    <p>请输入访问密码</p>
+    <input id="gp" type="password" placeholder="访问密码" autocomplete="off">
+    <button id="gbtn">进入看板</button>
+    <div class="err" id="gerr"></div>
+  </div>
+</div>
+<script>
+(function(){
+  // 默认密码 water2026。改密码：把 b64("你的密码") 的结果替换 PWD 即可（中文也支持）。
+  var PWD="d2F0ZXIyMDI2bWVh";
+  function b64(s){return btoa(unescape(encodeURIComponent(s)));}
+  var gate=document.getElementById('gate');
+  if(sessionStorage.getItem('wb_ok')==='1'){gate.style.display='none';return;}
+  function tryOpen(){
+    var v=document.getElementById('gp').value;
+    if(b64(v)===PWD){sessionStorage.setItem('wb_ok','1');gate.style.display='none';}
+    else{document.getElementById('gerr').textContent='密码错误，请重试';}
+  }
+  document.getElementById('gbtn').addEventListener('click',tryOpen);
+  document.getElementById('gp').addEventListener('keydown',function(e){if(e.key==='Enter')tryOpen();});
+})();
+</script>
+</body>
+</html>
