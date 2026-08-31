@@ -70,8 +70,8 @@
  "order_pool": {
   "count": 124,
   "qty": 75831,
-  "shipped": 41856,
-  "unshipped": 33975,
+  "shipped": 44246,
+  "unshipped": 31585,
   "by_region": [
    {
     "name": "美洲",
