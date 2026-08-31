@@ -34,7 +34,9 @@
  "aug": {
   "total": 20787.0,
   "aug25_total": 33706.0,
+  "aug25_sep": 39278.0,
   "kpi_aug": 40000.0,
+  "kpi_sep": 44000.0,
   "rate": 0.5197
  },
  "inventory": {
